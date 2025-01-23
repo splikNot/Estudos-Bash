@@ -1,0 +1,93 @@
+# JQ - Anotações
+
+
+## Vou deixar os comandos de forma simples e objetiva, mas lembrando que vc pode combinar os comando em pipelines, para criar novos arquivos, definir váriaveis, aplicar em váriaveis, arquivos, scripts e etc.
+
+# Regras de invocação (lembrei de yugioh)
+jq -r # faz a impressão sem os parenteses
+jq -r 'keys[]' file.json            #imprime toas as chaves de um arquivo
+jq -r '.key1 | keys[]' file.json    #imprime todas as subchaves
+                                    #É diferente de chamar apenas a chave, que iria retornar um dicionário.
+
+
+# Printa todo o arquivo no terminal formatado e identado corretamente
+jq '.' file.json
+
+
+
+# Identificação dos objetos (Semelhante ao JavaScript)
+jq '.key1'
+jq '.key2'
+jq '.key.subkey.subsubkey'
+
+
+# Arrays (Parecido com Python, mas não é igual)
+echo $array | jq '.[3]'    #Acesso ao indice
+echo $array | jq '.[1:4]'  #Slices
+echo $array | jq '.[2:]'
+echo $array | jq '.[-2]'   #Indices negativos
+echo $array | jq '.[:-2]'  #Slices com indices negativos
+jq '.key[].subkey[2]'
+
+#Arrays Constructors
+echo '""' | jq '1,2'    #Imprime os núemros 1 e 2 em cada linha
+echo '""' | jq '[1,2]'  #Imprime uma lista com um elemento em cada linha
+
+#Isso parece inutil, mas é bem útil para criar listas com os elementos desejados por exemplo, o comando
+echo $arrayDicts | jq '.[].player.name'  #Eu tenho um array contendo dict, cada dict tem a chave name
+                                        #Eu estou passando por cada dict no array e imprimindo o valor correspondente a chave name.
+                                        #Porém esse comando apenas irá imprimir a string de cada resultado em uma linha, fazendo:
+
+echo $arrayDicts | jq ['.[].player.name'] #Será inserido todo dentro de uma lista, e isso é bem útil porque criar
+                                         #listas em bash é pouco
+
+                                         junkintuitivo.
+
+
+# Object Constructors (Usado para construir dicionário)
+echo '["Raphael", "Cardoso", "Almeida"]' | jq -r '.[0], .[2]' #Em listas conseguimos acessar os dados dessa forma
+                                                                #Agora se quisermos salvar como um objeto, dict;
+echo '["Raphael", "Cardoso", "Almeida"]' | jq -r '{"first_name":.[0], "last_name": .[2]}
+# Dessa forma podemos criar um dict facilmente
+
+# Outra sintaxe importante para é por exemplo, podemos nos encontrar na situação em que buscamos contruir um objeto e fazemos então:
+
+curl "https://apiurl.com/data" | jq '[{title:.[].title, number:.[].number}]' #Podemos facilitar a sintaxe
+curl "https://apiurl.com/data" | jq '[ .[] | {title, number} ]'
+
+# Generalizando a sintaxe:
+jq '{"key1": <<jq filter>>, "key2": <<jq filter>>}'
+
+jq '{"key1","key2"}'
+
+
+#Sorting and Counting
+
+jq 'sort' #Organiza um array (númerico ou string)
+jq 'sort_by(.label)'
+jq 'reverse' # Organiza um array de forma reversa
+jq 'length' # Tamanho
+
+echo {"key":var} | jq '.name' | jq 'length'
+echo {"key": var} | jq '.title | length' #Posso fazer piping dentro de strings
+
+# Maps and Selects
+
+curl https://apiurl.com | \
+jq '[ .[] | {title, number, labels_count: .labels | length, title_length: .title | length}]'
+
+#Isso seria o equivalente a fazer isso:
+curl https://apiurl.com | \
+jq 'map({title, number, labels_count: .labels | length, title_length: .title | length } )'
+
+# E o select é interessante para filtrar, poderiamos fazer um piping na função anterior de modo:
+curl https://apiurl.com | \
+jq 'map({title, number, labels_count: .labels | length, title_length: .title | length } ) |
+map(select(.title_length > 30))'
+
+Fonte: https://www.youtube.com/watch?v=m9dhrq9iRHA&t=1320s
+
+
+
+
+

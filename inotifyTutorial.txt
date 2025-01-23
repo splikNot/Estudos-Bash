@@ -1,0 +1,96 @@
+# INOTIFY - Anotações
+
+
+
+## Monitorar pastas
+
+
+#!/bin/bash
+
+# Caminho da pasta a ser monitorada
+pasta_monitorada="/caminho/para/sua/pasta"
+
+# Monitorar novos arquivos na pasta
+inotifywait -m "$pasta_monitorada" -e create --format '%f' | while read arquivo
+do
+  # Verificar o formato do arquivo
+  if [[ "$arquivo" == *.txt ]]; then
+    echo "Novo arquivo .txt detectado: $arquivo"
+    # Chamar um script ou executar uma ação
+    /caminho/para/seu/script.sh "$pasta_monitorada/$arquivo"
+  elif [[ "$arquivo" == *.csv ]]; then
+    echo "Novo arquivo .csv detectado: $arquivo"
+    # Outra ação para arquivos CSV
+    echo "Processando arquivo CSV: $arquivo"
+  fi
+done
+
+# inotifywait: ferramenta que monitora eventos no sistema de arquivos, faz parte do conjunto do inotify-tools;
+# -m: Coloca o comando no modo contínuo, ele irá monitorar os eventos na pasta até que seja manualmente desligado;
+# $pasta_monitorada: Caminho do diretório à ser observado;
+# -e create: Seleciona que tipo de evento vai ser o gatilho. Neste caso, o evento que será quando um arquivo é criado
+# --format: Define o formato de saída que o inotify deve usar quando exibir as informações do evento
+# '%f': Representa apenas o nome do arquivo que disparou o evento, não incluí o caminho completo.
+# | : O pipe conecta a saída da do inotifywait (nomes dos arquivos criados) com o comando while
+do
+# while read arquivo: Processa cada linha e armazena na varaivel arquivo(?)
+# Para cada novo evento (arquivo criado), o loop é executado
+
+
+
+
+
+# Exemplo de uma aplicação com várias extensões
+
+#!/bin/bash
+
+# Caminho da pasta a ser monitorada
+pasta_monitorada="/caminho/para/sua/pasta"
+
+# Monitorar eventos de criação
+inotifywait -m "$pasta_monitorada" -e create --format '%f' | while read arquivo
+do
+  case "$arquivo" in
+    *.txt)
+      echo "Arquivo de texto detectado: $arquivo"
+      # Ação para .txt
+      ;;
+    *.csv)
+      echo "Arquivo CSV detectado: $arquivo"
+      # Ação para .csv
+      ;;
+    *.json)
+      echo "Arquivo JSON detectado: $arquivo"
+      # Ação para .json
+      ;;
+    *)
+      echo "Arquivo desconhecido: $arquivo"
+      ;;
+  esac
+done
+
+
+
+# Rodar o script em segundo plano
+
+nohup ./seu_script.sh &
+
+# Criar um arquivo de serviço
+/etc/systemd/system/monitorar_pasta.service
+
+:
+(ini)
+[Unit]
+Description=Monitorar uma pasta para novos arquivos
+After=network.target
+
+[Service]
+ExecStart=/caminho/para/seu_script.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+:
+
+sudo systemctl enable monitorar_pasta
+sudo systemctl start monitorar_pasta
