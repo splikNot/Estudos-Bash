@@ -1,4 +1,4 @@
-# JQ (O que a sigla significa?)
+# JQ (JSON Querying)
 
 Apenas um lembrete de que, apesar de os comandos estarem objetivamente definidos, não se esqueça de que é possível combina-los em pipelines para criar novos arquivos, variáveis, aplicar em scripts e etc...
 
@@ -113,6 +113,7 @@ map(select(.title_length > 30))'
 
 ## Fontes
 [The Ultimate JQ Tutorial by: Earthly](https://www.youtube.com/watch?v=m9dhrq9iRHA)
+
 [jq documentation](https://jqlang.org/manual/)
 
 
