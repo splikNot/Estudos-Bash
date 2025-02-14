@@ -112,7 +112,7 @@ map(select(.title_length > 30))'
 ```
 
 ## Fontes
-Link Youtube
-Link Documentação jq
+[The Ultimate JQ Tutorial by: Earthly](https://www.youtube.com/watch?v=m9dhrq9iRHA)
+[jq documentation](https://jqlang.org/manual/)
 
 
